@@ -1,4 +1,4 @@
-#Twitter Scraper
+# Twitter Scraper
 
 The Twitter Scraper is a Python script that allows users to scrape tweets from Twitter based on specified search criteria, date range, and maximum number of tweets. It utilizes the Tweepy library to interact with the Twitter API and provides options for text cleaning, parallel processing, error handling, and data saving.
 
@@ -42,6 +42,3 @@ Contributions are welcome! If you have any ideas for improvements or new feature
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
-
-You can customize this template with additional details or instructions as needed.
