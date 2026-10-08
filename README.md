@@ -49,7 +49,8 @@ The script asks for a query, start/end dates, maximum records, and optional text
 - The legacy `API.search` call and date-search parameters may fail under current Tweepy or Twitter/X APIs. Modernizing requires validating the currently permitted API endpoints, authentication and rate limits.
 - The script launches only **one** search task in its thread executor; it is not a parallel scraping system despite the previous README's description.
 - Output volume, historical date range, and functionality depend on the API service's access policies.
-- No automated tests, pinned compatible dependency set, or currently verified API integration are included.
+- Six offline tests have passed in GitHub Actions for credential configuration, date validation, text cleanup and synthetic CSV/JSON exports. These **do not** verify real Twitter/X API access or compatibility.
+- Runtime dependency versions are not pinned. Run offline tests with `python -m unittest discover -s tests -p 'test_*.py' -v` after installing Tweepy.
 - Do not bypass platform access restrictions or collect private data without appropriate authorization.
 
 ## Safety
