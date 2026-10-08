@@ -1,0 +1,28 @@
+name: Python offline tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scrapper.py
+      - tests/**
+      - .github/workflows/python-tests.yml
+
+permissions:
+  contents: read
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Tweepy
+        run: python -m pip install tweepy
+      - name: Python syntax check
+        run: python -m compileall -q scrapper.py tests
+      - name: Offline synthetic tests
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
