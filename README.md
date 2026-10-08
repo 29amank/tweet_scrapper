@@ -1,44 +1,65 @@
-# Twitter Scraper
+# Twitter/X Search Exporter — Legacy Python Prototype
 
-The Twitter Scraper is a Python script that allows users to scrape tweets from Twitter based on specified search criteria, date range, and maximum number of tweets. It utilizes the Tweepy library to interact with the Twitter API and provides options for text cleaning, parallel processing, error handling, and data saving.
+A Python command-line prototype for searching posts through the **legacy Twitter API**, cleaning returned text, and exporting results to JSON or CSV. It uses [Tweepy](https://www.tweepy.org/).
 
-## Features
+> **Compatibility warning:** The source uses `tweepy.API.search` and v1.1-style search arguments. Current Tweepy versions and Twitter/X API access levels may no longer support these methods. **This project has not been tested against a current API subscription and is not confirmed functional today.**
 
-- **Scraping Tweets**: Retrieve tweets from Twitter based on a search query, start date, end date, and maximum number of tweets.
-  
-- **Text Cleaning**: Automatically clean tweet text by removing special characters, URLs, non-ASCII characters, and extra whitespaces. Users can also specify custom characters to remove.
+## Repository contents
 
-- **Date Validation**: Validate the format of user-provided start and end dates to ensure they are in the YYYY-MM-DD format.
+- `scrapper.py` — actual script entrypoint
+- `.env.example` — names of required credential environment variables, with placeholders only
+- `.gitignore` — prevents common local credentials, CSV/JSON exports, and logs from accidental future commits
+- `LICENSE` — MIT license included in this repository
 
-- **Error Handling**: Catch and log exceptions that occur during the scraping process or other operations, providing informative error messages to users.
+## Run locally (for controlled legacy compatibility testing)
 
-- **Parallel Processing**: Utilize parallel processing with ThreadPoolExecutor to scrape tweets concurrently, improving performance by making multiple API requests simultaneously.
+Create an isolated Python environment:
 
-- **Saving Data**: Give users the option to save the scraped tweet data to JSON or CSV files, providing flexibility for further analysis or storage.
+```bash
+git clone https://github.com/29amank/tweet_scrapper.git
+cd tweet_scrapper
+python -m venv .venv
+```
 
-## Usage
+Activate it with `.venv\Scripts\Activate.ps1` on Windows PowerShell, or `source .venv/bin/activate` on Linux/macOS, then install the library:
 
-1. Install the required dependencies:
-   ```
-   pip install tweepy
-   ```
+```bash
+python -m pip install tweepy
+```
 
-2. Run the script:
-   ```
-   python twitter_scraper.py
-   ```
+Before running, set **these environment variables** in your terminal or an approved local secret manager:
 
-3. Follow the prompts to enter search criteria, date range, maximum number of tweets, text cleaning options, and data saving preferences.
+- `X_CONSUMER_KEY`
+- `X_CONSUMER_SECRET`
+- `X_ACCESS_TOKEN`
+- `X_ACCESS_TOKEN_SECRET`
 
-## Dependencies
+`.env.example` is a *reference template*. The current script reads **process environment variables**, and does **not** load a `.env` file automatically. Never commit genuine values to GitHub or paste them into public logs.
 
-- [Tweepy](https://www.tweepy.org/): An easy-to-use Python library for accessing the Twitter API.
+Run:
 
-## Contributing
+```bash
+python scrapper.py
+```
 
-Contributions are welcome! If you have any ideas for improvements or new features, feel free to open an issue or submit a pull request.
+The script asks for a query, start/end dates, maximum records, and optional text cleanup. If the API call succeeds, it can export data as `tweets.csv` or `tweets.json`. These exports can contain user content, so handle and retain them responsibly.
+
+## Known limitations
+
+- The legacy `API.search` call and date-search parameters may fail under current Tweepy or Twitter/X APIs. Modernizing requires validating the currently permitted API endpoints, authentication and rate limits.
+- The script launches only **one** search task in its thread executor; it is not a parallel scraping system despite the previous README's description.
+- Output volume, historical date range, and functionality depend on the API service's access policies.
+- Six offline tests have passed in GitHub Actions for credential configuration, date validation, text cleanup and synthetic CSV/JSON exports. These **do not** verify real Twitter/X API access or compatibility.
+- Runtime dependency versions are not pinned. Run offline tests with `python -m unittest discover -s tests -p 'test_*.py' -v` after installing Tweepy.
+- Do not bypass platform access restrictions or collect private data without appropriate authorization.
+
+## Safety
+
+- Credential values are read from environment variables rather than hard-coded in `scrapper.py`.
+- `.gitignore` helps prevent accidental future additions, but cannot remove previously tracked data or history.
+- Revoke or rotate any credential that was previously exposed.
+- Review API terms, data retention, and user privacy before using exported data.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+[MIT License](LICENSE) — see the included license file.

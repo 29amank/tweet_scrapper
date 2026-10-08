@@ -5,16 +5,18 @@ import logging
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import re
+import os
 
-# Twitter API credentials
-consumer_key = 'your_consumer_key'
-consumer_secret = 'your_consumer_secret'
-access_token = 'your_access_token'
-access_token_secret = 'your_access_token_secret'
-
-# Authenticate with Twitter API
-auth = tweepy.OAuth1UserHandler(consumer_key, consumer_secret, access_token, access_token_secret)
-api = tweepy.API(auth)
+# Read credentials from local environment rather than keeping them in source.
+# This project uses a legacy Twitter/X API endpoint; API availability depends
+# on the account's access tier and the installed Tweepy version.
+def build_api():
+    names = ("X_CONSUMER_KEY", "X_CONSUMER_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_TOKEN_SECRET")
+    missing = [name for name in names if not os.getenv(name)]
+    if missing:
+        raise ValueError("Missing environment variables: " + ", ".join(missing))
+    auth = tweepy.OAuth1UserHandler(*(os.environ[name] for name in names))
+    return tweepy.API(auth)
 
 # Set up logging
 logging.basicConfig(filename='twitter_scraper.log', level=logging.INFO)
@@ -25,9 +27,10 @@ def scrape_tweets(search_query, since_date, until_date, max_tweets):
     """
     try:
         # Scrape tweets based on search query and time frame
+        api = build_api()
         tweets = tweepy.Cursor(api.search, q=search_query, since=since_date, until=until_date, tweet_mode='extended').items(max_tweets)
         return list(tweets)
-    except tweepy.TweepError as e:
+    except Exception as e:
         logging.error(f"Error occurred while scraping tweets: {e}")
         print("An error occurred while scraping tweets. Please try again later.")
         return []
